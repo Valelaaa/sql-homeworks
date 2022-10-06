@@ -4,126 +4,274 @@ SELECT first_name, last_name, salary, job_title
 FROM employees
          LEFT JOIN jobs USING (job_id);
 -- 2. the first and last name, department, city, and state province for each employee.
-SELECT first_name as firstName, last_name as lastName,
-       department_name as department, city,
-       state_province as stateProvince
+SELECT first_name AS firstName,
+       last_name AS lastName,
+       department_name AS department, city,
+       state_province AS stateProvince
 FROM employees
-         LEFT JOIN departments using (department_id)
-         LEFT JOIN locations using (location_id);
+         LEFT JOIN departments USING (department_id)
+         LEFT JOIN locations USING (location_id);
 -- 3. the first name, last name, department number and department name, for all employees for departments 80 or 40.
-SELECT first_name as firstName,last_name as lastName,
-       department_id as departmentNumber, department_name as department
+SELECT first_name AS firstName,
+       last_name AS lastName,
+       department_id AS departmentNumber,
+       department_name AS department
 FROM employees
-         LEFT JOIN departments USING (department_id)
-WHERE department_id = 80 or department_id = 40;
+         LEFT JOIN departments
+             USING (department_id)
+WHERE department_id = 80
+   OR department_id = 40;
 -- 4. those employees who contain a letter z to their first name and also display their last name, department, city, and state province.
-SELECT first_name,last_name AS lastName, department_name as department,
-       city, state_province AS stateProvince
+SELECT first_name, last_name,
+       department_name AS department,
+       city, state_province
 FROM employees
-         LEFT JOIN departments USING (department_id)
-         LEFT JOIN locations USING (location_id)
+         LEFT JOIN departments
+             USING (department_id)
+         LEFT JOIN locations
+             USING (location_id)
 WHERE first_name LIKE '%z%';
 
 -- 5. the first and last name and salary for those employees who earn less than the employee earn whose number is 182.
-SELECT first_name as firstName, last_name as lastName,
-       salary FROM employees
-WHERE salary < (SELECT salary FROM employees WHERE employee_id = 182);
+SELECT first_name AS firstName,
+       last_name AS lastName, salary
+FROM employees
+WHERE salary <
+      (SELECT salary
+       FROM employees
+       WHERE employee_id = 182);
 -- 6. the first name of all employees including the first name of their manager.
-SELECT a.first_name as employee, b.first_name as manager
+SELECT a.first_name AS employee,
+       b.first_name AS manager
 FROM employees a
          INNER JOIN employees b
                     ON a.manager_id = b.employee_id;
 -- 7. the first name of all employees and the first name of their manager including those who does not working under any manager.
-SELECT a.first_name as employee, b.first_name as manager
+SELECT a.first_name AS employee,
+       b.first_name AS manager
 FROM employees a
          LEFT JOIN employees b
                    ON a.manager_id = b.employee_id;
 -- 8. the details of employees who manage a department.
 SELECT first_name, last_name, email,
-       phone_number, salary, department_name, manager_id
-FROM employees INNER JOIN departments USING(manager_id);
+       phone_number, department_name
+FROM employees
+    INNER JOIN departments
+        USING(manager_id);
 -- 9. the first name, last name, and department number for those
 -- employees who works in the same department as the employee who
 -- holds the last name as Taylor.
 SELECT first_name, last_name, department_id
 FROM employees
 WHERE department_id IN
-      (SELECT department_id FROM employees WHERE last_name LIKE 'Taylor');
+      (SELECT department_id
+       FROM employees
+       WHERE last_name LIKE 'Taylor');
 --10. the department name and number of employees in each of the department.
 SELECT department_name, COUNT(*)
-FROM departments INNER JOIN employees USING(department_id)
+FROM departments
+    INNER JOIN employees
+        USING(department_id)
 GROUP BY department_id,department_name;
 --11. the name of the department, average salary and number
 -- of employees working in that department who got commission.
-
-
+SELECT department_name,
+       ROUND(AVG(salary)),
+       COUNT(*)
+FROM employees
+    INNER JOIN departments
+        USING(department_id)
+    WHERE commission_pct
+        IS NOT NULL
+GROUP BY department_name;
 
 --12. job title and average salary of employees.
 SELECT job_title AS job,
        (max_salary+min_salary)/2 AS avgSalary
 FROM jobs;
 --13. the country name, city, and number of those departments where at least 2 employees are working.
-SELECT country_name as countryName, city,
-       department_id as departmentNumber
+SELECT country_name AS countryName, city,
+       department_id AS departmentNumber
 FROM departments
-         INNER JOIN locations USING(location_id)
-         INNER JOIN countries USING(country_id);
+         INNER JOIN locations
+             USING(location_id)
+         INNER JOIN countries
+             USING(country_id);
 --14. the employee ID, job name, number of days
 -- worked in for all those jobs in department 80.
-SELECT employee_id as employeeID, job_title as jobName,
-       (end_date - start_date)
-                   as workedDays, department_id
+SELECT employee_id AS employeeID,
+       job_title AS jobName,
+       (end_date - start_date) AS workedDays,
+       department_id
 FROM job_history
-         LEFT JOIN jobs USING(job_id)
-         LEFT JOIN departments USING(department_id)
+         LEFT JOIN jobs
+             USING(job_id)
+         LEFT JOIN departments
+             USING(department_id)
 WHERE department_id = 80;
 --15. the name ( first name and last name ) for those employees who gets more salary than the employee whose ID is 163.
 SELECT first_name || ' ' || last_name AS name
 FROM employees
-WHERE salary > (
-    SELECT salary FROM employees WHERE employee_id = 163);
+WHERE salary >
+      (SELECT salary
+       FROM employees
+       WHERE employee_id = 163);
 --16. the employee id, employee name (first name and last name ) for all employees who earn more than the average salary.
-SELECT employee_id, first_name || ' ' || last_name AS name
-FROM employees WHERE salary > (SELECT AVG(salary) FROM employees);
+SELECT employee_id,
+       first_name || ' ' || last_name AS name
+FROM employees
+WHERE salary >
+      (SELECT AVG(salary)
+       FROM employees);
 --17. the employee name ( first name and last name ), employee id and salary of all employees who report to Payam.
-SELECT first_name || ' ' || last_name AS name, employee_id, salary
-FROM employees WHERE manager_id = (SELECT manager_id FROM employees
-                                   WHERE first_name LIKE 'Payam');
+SELECT first_name || ' ' || last_name AS name,
+       employee_id, salary
+FROM employees
+WHERE manager_id =
+      (SELECT manager_id
+       FROM employees
+       WHERE first_name LIKE 'Payam');
 --18. the department number, name ( first name and last name ), job and department name for all employees in the Finance department.
-SELECT department_id as departmentID,
+SELECT department_id AS departmentID,
        first_name || ' ' || last_name AS name,
        job_title AS job,
        department_name AS departmentName
 FROM jobs
-         INNER JOIN employees USING (job_id)
-         INNER JOIN departments USING (department_id)
+         INNER JOIN employees
+             USING (job_id)
+         INNER JOIN departments
+             USING (department_id)
 WHERE department_name LIKE 'Finance';
 
 --19. all the information of an employee whose id is any of the number 134, 159 and 183.
-SELECT * FROM
-    employees WHERE employee_id IN (134,159,183) ORDER BY DBMS_RANDOM.RANDOM FETCH FIRST ROWS ONLY;
+SELECT *
+FROM
+    employees WHERE employee_id
+                        IN (134,159,183)
+              ORDER BY DBMS_RANDOM.RANDOM
+              FETCH FIRST ROWS ONLY;
 --20. all the information of the employees whose salary is within the range of smallest salary and 2500.
-
+SELECT *
+FROM employees
+         WHERE salary
+             BETWEEN
+             (SELECT MIN(salary)
+              FROM employees)
+             AND 2500;
 --21. all the information of the employees who does not work in those departments where some employees works whose id within the range 100 and 200.
-
+SELECT *
+FROM employees
+         WHERE department_id NOT IN
+               (SELECT department_id
+                FROM departments
+                WHERE employee_id
+                    BETWEEN 100 AND 200);
 --22. all the information for those employees whose id is any id who earn the second highest salary.
+SELECT *
+FROM employees
+         WHERE salary =
+                (SELECT MAX(salary)
+                 FROM employees
+                WHERE salary <
+                      (SELECT MAX(salary)
+                       FROM employees))
+                        ORDER BY DBMS_RANDOM.RANDOM
+                        FETCH FIRST ROWS ONLY;
 
---23. the employee name( first name and last name ) and hiredate for all employees in the same department as Clara. Exclude Clara.
-
+--23. the employee name( first name and last name ) and hire
+-- date for all employees in the same department as Clara. Exclude Clara.
+SELECT first_name || ' ' || last_name AS name,
+       hire_date AS hireDate
+FROM employees
+WHERE department_id IN
+                     (SELECT department_id
+                      FROM employees
+                      WHERE first_name LIKE 'Clara')
+                 AND first_name NOT LIKE 'Clara';
 --24. the employee number and name( first name and last name ) for all employees who work in a department with any employee whose name contains a T.
-
+-- CASE THEN name contains T or t
+SELECT employee_id AS employeeNumber,
+       first_name || ' ' || last_name AS name
+FROM employees
+WHERE department_id IN
+      (SELECT department_id
+       FROM employees
+       WHERE UPPER(first_name || last_name) LIKE '%T%'
+       GROUP BY department_id);
 --25. full name(first and last name), job title, starting and ending date of last jobs for those employees with worked without a commission percentage.
-
---26. the employee number, name( first name and last name ), and salary for all employees who earn more than the average salary and who work in a department with any employee with a J in their name.
-
---27. the employee number, name( first name and last name ) and job title for all employees whose salary is smaller than any salary of those employees whose job title is MK_MAN.
-
---28. the employee number, name( first name and last name ) and job title for all employees whose salary is smaller than any salary of those employees whose job title is MK_MAN. Exclude Job title MK_MAN.
-
+SELECT first_name || ' ' || last_name AS name,
+       job_title AS jobTitle,
+       start_date, end_date
+FROM job_history
+    INNER JOIN jobs
+        USING(job_id)
+    INNER JOIN employees
+        USING(job_id)
+WHERE commission_pct IS NOT NULL;
+--26. the employee number, name( first name and last name ), and salary for all employees
+-- who earn more than the average salary
+-- and who work in a department with any employee with a J in their name.
+--Case Then name contains J and j
+SELECT phone_number,
+       first_name || ' ' || last_name AS name,
+       salary
+FROM employees
+WHERE salary >
+      (SELECT AVG(salary)
+       FROM employees)
+  AND department_id IN
+      (SELECT department_id
+       FROM employees
+       WHERE UPPER(first_name || ' ' || last_name) LIKE '%J%');
+--27. the employee number, name( first name and last name ) and job title for
+-- all employees whose salary is smaller than any salary of those employees whose job title is MK_MAN.
+SELECT phone_number,
+       first_name || ' ' || last_name AS name,
+       job_title
+FROM employees
+    INNER JOIN jobs
+        USING (job_id)
+WHERE salary <
+      (SELECT salary
+       FROM employees
+           INNER JOIN jobs
+               USING(job_id)
+       WHERE job_id LIKE 'MK_MAN');
+--28. the employee number, name( first name and last name ) and job title
+-- for all employees whose salary is smaller than any salary
+-- of those employees whose job title is MK_MAN. Exclude Job title MK_MAN.
+SELECT phone_number,
+       first_name || ' ' || last_name AS name,
+       job_title
+FROM employees
+    INNER JOIN jobs
+        USING (job_id)
+WHERE salary <
+      (SELECT salary
+       FROM employees
+           INNER JOIN jobs
+               USING(job_id)
+       WHERE job_id LIKE 'MK_MAN')
+  AND job_id NOT LIKE 'MK_MAN';
 --29. all the information of those employees who did not have any job in the past.
-
+SELECT *
+FROM employees
+WHERE employee_id NOT IN
+      (SELECT employee_id
+       FROM job_history);
 --30. the employee number, name( first name and last name ) and job title for all employees whose salary is more than any average salary of any department.
-
+SELECT phone_number,
+       first_name || ' ' || last_name AS name,
+       job_title
+FROM employees
+    INNER JOIN jobs
+        USING (job_id)
+WHERE salary >
+      (SELECT MAX(avg_salary)
+       FROM
+           (SELECT AVG(salary) AS avg_salary
+            FROM employees
+            GROUP BY department_id))
 --31. the employee id, name ( first name and last name ) and the job id column with a modified title SALESMAN for those employees whose job title is ST_MAN and DEVELOPER for whose job title is IT_PROG.
 
 --32. the employee id, name ( first name and last name ), salary and the SalaryStatus column with a title HIGH and LOW respectively for those employees whose salary is more than and less than the average salary of all employees.
