@@ -96,7 +96,7 @@ GROUP BY department_name;
 
 --12. job title and average salary of employees.
 SELECT job_title AS job,
-       (max_salary+min_salary)/2 AS avgSalary
+       ((max_salary + min_salary) / 2) AS avgSalary
 FROM jobs;
 
 --13. the country name, city, and number of those departments where at least 2 employees are working.
@@ -413,7 +413,9 @@ ORDER BY salary DESC;
 SELECT first_name,salary, department_id
 FROM employees
 WHERE salary >
-      (SELECT MAX(salary) FROM employees WHERE department_id = 40);
+      (SELECT MAX(salary)
+       FROM employees
+       WHERE department_id = 40);
 
 --41. the department name and Id for all departments where they located,
 -- that Id is equal to the Id for the location where department number 30 is located.
@@ -424,7 +426,8 @@ USING (location_id)
 WHERE location_id =
       (SELECT location_id
        FROM departments
-       INNER JOIN locations USING(location_id)
+       INNER JOIN locations
+           USING(location_id)
        WHERE department_id = 30
        );
 
