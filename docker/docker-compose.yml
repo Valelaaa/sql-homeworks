@@ -13,7 +13,7 @@ services:
       - './setup:/opt/oracle/scripts/setup'
       - 'dbdata:/opt/oracle/oradata'
     ports:
-      - '1521:1521'
+      - '1522:1521'
       - '550:5500'
     logging:
       driver: "local"

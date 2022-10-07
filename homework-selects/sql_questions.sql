@@ -81,7 +81,6 @@ FROM departments
     INNER JOIN employees
         USING(department_id)
 GROUP BY department_id,department_name;
-
 --11. the name of the department, average salary and number
 -- of employees working in that department who got commission.
 SELECT department_name,
@@ -103,9 +102,9 @@ FROM jobs;
 SELECT country_name AS countryName, city,
        department_id AS departmentNumber
 FROM departments
-         INNER JOIN locations
+         LEFT JOIN locations
              USING(location_id)
-         INNER JOIN countries
+         LEFT JOIN countries
              USING(country_id);
 
 --14. the employee ID, job name, number of days
@@ -152,9 +151,9 @@ SELECT department_id AS departmentID,
        job_title AS job,
        department_name AS departmentName
 FROM jobs
-         INNER JOIN employees
+         LEFT JOIN employees
              USING (job_id)
-         INNER JOIN departments
+         LEFT JOIN departments
              USING (department_id)
 WHERE department_name LIKE 'Finance';
 
@@ -222,9 +221,9 @@ SELECT first_name || ' ' || last_name AS name,
        job_title AS jobTitle,
        start_date, end_date
 FROM job_history
-    INNER JOIN jobs
+    LEFT JOIN jobs
         USING(job_id)
-    INNER JOIN employees
+    LEFT JOIN employees
         USING(job_id)
 WHERE commission_pct IS NOT NULL;
 
@@ -249,12 +248,12 @@ SELECT phone_number,
        first_name || ' ' || last_name AS name,
        job_title
 FROM employees
-    INNER JOIN jobs
+    LEFT JOIN jobs
         USING (job_id)
 WHERE salary <
       (SELECT salary
        FROM employees
-           INNER JOIN jobs
+           LEFT JOIN jobs
                USING(job_id)
        WHERE job_id LIKE 'MK_MAN');
 
@@ -265,12 +264,12 @@ SELECT phone_number,
        first_name || ' ' || last_name AS name,
        job_title
 FROM employees
-    INNER JOIN jobs
+    LEFT JOIN jobs
         USING (job_id)
 WHERE salary <
       (SELECT salary
        FROM employees
-           INNER JOIN jobs
+           LEFT JOIN jobs
                USING(job_id)
        WHERE job_id LIKE 'MK_MAN')
   AND job_id NOT LIKE 'MK_MAN';
@@ -287,7 +286,7 @@ SELECT phone_number,
        first_name || ' ' || last_name AS name,
        job_title
 FROM employees
-    INNER JOIN jobs
+    LEFT JOIN jobs
         USING (job_id)
 WHERE salary >
       (SELECT MAX(avg_salary)
@@ -342,7 +341,7 @@ FROM employees;
 --34. all the employees who earn more than the average and who work in any of the IT departments.
 SELECT *
 FROM employees
-INNER JOIN departments
+LEFT JOIN departments
     USING(department_id)
 WHERE salary >
       (SELECT AVG(salary)
@@ -361,11 +360,11 @@ WHERE salary >
 --36. which employees have a manager who works for a department based in the US.
 SELECT first_name || ' ' || last_name AS name
 FROM employees
-    INNER JOIN departments
+    LEFT JOIN departments
         USING(manager_id)
-INNER JOIN locations
+LEFT JOIN locations
     USING(location_id)
-INNER JOIN countries
+LEFT JOIN countries
     USING(country_id)
 WHERE country_name LIKE 'United States of America';
 
@@ -386,9 +385,9 @@ SELECT a.employee_id,
        department_name,
        city
 FROM locations
-INNER JOIN departments
+LEFT JOIN departments
         USING(location_id)
-INNER JOIN employees a
+LEFT JOIN employees a
 USING(department_id)
 WHERE a.manager_id =
       (SELECT employee_id
@@ -421,12 +420,12 @@ WHERE salary >
 -- that Id is equal to the Id for the location where department number 30 is located.
 SELECT department_name, department_id
        FROM departments
-INNER JOIN locations
+LEFT JOIN locations
 USING (location_id)
 WHERE location_id =
       (SELECT location_id
        FROM departments
-       INNER JOIN locations
+       LEFT JOIN locations
            USING(location_id)
        WHERE department_id = 30
        );
@@ -456,7 +455,7 @@ FROM employees
 WHERE salary >
       (SELECT min_salary
        FROM employees
-       INNER JOIN jobs
+       LEFT JOIN jobs
            USING(job_id)
        WHERE department_id = 40);
 
@@ -467,7 +466,7 @@ FROM employees
 WHERE salary <
       (SELECT min_salary
        FROM employees
-                INNER JOIN jobs
+                LEFT JOIN jobs
                            USING(job_id)
        WHERE department_id = 70);
 
