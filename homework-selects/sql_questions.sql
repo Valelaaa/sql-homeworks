@@ -211,16 +211,16 @@ FROM employees
 WHERE department_id IN
       (SELECT department_id
        FROM employees
-       WHERE first_name LIKE '%T%');
+       WHERE first_name||last_name LIKE '%T%');
 --25. full name(first and last name), job title, starting and ending date of last jobs for those employees with worked without a commission percentage.
 SELECT first_name || ' ' || last_name AS name,
        job_title AS "Job title",
        start_date AS "Starting date",
        end_date AS "Ending date"
-FROM job_history
+FROM employees a
     LEFT JOIN jobs
-        USING(job_id)
-    LEFT JOIN employees a
+        USING (job_id)
+    LEFT JOIN job_history
         USING(job_id)
     LEFT JOIN (SELECT MAX(start_date),
                     MAX(end_date),
