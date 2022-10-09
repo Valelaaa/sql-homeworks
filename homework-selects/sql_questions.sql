@@ -242,7 +242,8 @@ WHERE salary >
   AND department_id IN
       (SELECT department_id
        FROM employees
-       WHERE first_name LIKE '%J%');
+       WHERE first_name LIKE '%J%'
+       OR last_name LIKE '%J%');
 
 --27. the employee number, name( first name and last name ) and job title for
 -- all employees whose salary is smaller than any salary of those employees whose job title is MK_MAN.
