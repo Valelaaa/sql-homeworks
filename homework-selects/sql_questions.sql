@@ -382,16 +382,16 @@ FROM employees a
 --the employees who gets the salary as the salary earn by the employee
 -- which is maximum within the joining person January 1st, 2002 and December 31st, 2003.
 SELECT
-    city,
-    department_name,
     a.employee_id,
-       a.first_name || ' ' || a.last_name AS name,
-       a.salary
-FROM locations
-LEFT JOIN departments
+    a.first_name || ' ' || a.last_name AS name,
+    a.salary,
+    city,
+    department_name
+FROM employees a
+    LEFT JOIN departments
+        USING (department_id)
+    LEFT JOIN locations
         USING(location_id)
-LEFT JOIN employees a
-USING(department_id)
 WHERE a.manager_id =
       (SELECT employee_id
        FROM employees
